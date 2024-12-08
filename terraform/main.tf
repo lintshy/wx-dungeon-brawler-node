@@ -103,7 +103,7 @@ resource "aws_lambda_permission" "allow_api_gateway" {
 # Deploy API Gateway
 resource "aws_api_gateway_deployment" "dungeon_brawler_deployment" {
   rest_api_id = aws_api_gateway_rest_api.dungeon_brawler.id
-  stage_name  = "prod"
+  aws_api_gateway_stage  = "prod"
 
   depends_on = [
     aws_api_gateway_integration.lambda_integration
