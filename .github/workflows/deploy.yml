@@ -28,10 +28,15 @@ jobs:
 
     # Deploy to AWS Lambda
     - name: Deploy to AWS Lambda
-      uses: appleboy/lambda-action@v1.1.0
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_region: ${{ secrets.AWS_REGION }}
-        function_name: ${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}
-        zip_file: lambda.zip
+        
+    # Deploy Lambda function using AWS CLI
+    - name: Deploy Lambda Function
+      run: |
+        aws lambda update-function-code \
+          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+          --zip-file fileb://lambda_function.zip
