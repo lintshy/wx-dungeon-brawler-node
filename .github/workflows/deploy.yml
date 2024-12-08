@@ -10,33 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Install Node.js dependencies
-    - name: Install dependencies
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
+      # Install Node.js dependencies
+      - name: Install dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
-    - run: npm install
+      - run: npm install
 
-    # Zip the application
-    - name: Package application
-      run: zip -r lambda.zip . -x ".git/*"
+      # Zip the application
+      - name: Package application
+        run: zip -r lambda.zip . -x ".git/*"
 
-    # Deploy to AWS Lambda
-    - name: Deploy to AWS Lambda
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+      # Deploy to AWS Lambda
+      - name: Deploy to AWS Lambda
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    # Deploy Lambda function using AWS CLI
-    - name: Deploy Lambda Function
-      run: aws lambda update-function-code --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" --zip-file fileb://lambda.zip
-        
-           
-          
+      # Deploy Lambda function using AWS CLI
+      - name: Deploy Lambda Function
+        run: |
+          aws lambda update-function-code \
+          --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" \
+          --zip-file fileb://lambda.zip
