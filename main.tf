@@ -54,7 +54,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 # API Gateway
 resource "aws_apigatewayv2_api" "dungeon_brawler" {
   name          = "wx-dungeon-brawler-api-gateway-test"
-  protocol_type = "REST"
+  protocol_type = "HTTP"
 }
 
 resource "aws_apigatewayv2_integration" "dungeon_brawler" {
