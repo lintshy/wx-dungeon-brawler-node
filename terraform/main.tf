@@ -50,7 +50,7 @@ resource "aws_lambda_function" "dungeon_brawler" {
 # Attach Policy to Role
 resource "aws_iam_role_policy" "lambda_policy" {
   name   = "lambda-policy-${var.app_name}-${var.environment}"
-  role   = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.arn : aws_iam_role.lambda_role[1].arn
+  role   = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.id : aws_iam_role.lambda_role[1].id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
