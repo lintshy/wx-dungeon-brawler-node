@@ -32,7 +32,7 @@ jobs: #Workflow run is made up of one or more jobs
       - name: Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_wrapper: false
+          terraform_version: 1.5.0
       # Step 5: Initialize Terraform
       - name: Terraform Init
         run: terraform init
@@ -42,8 +42,10 @@ jobs: #Workflow run is made up of one or more jobs
 
       # Step 6: Terraform Plan
       - name: Terraform Plan
-        run: terraform plan -var-file=terraform/test.tfvars -chdir=terraform
+        working-directory: terraform
+        run: terraform plan -var-file=terraform/test.tfvars
 
       # Step 7: Terraform Apply
       - name: Terraform Apply
-        run: terraform apply -var-file=terraform/test.tfvars -auto-approve -chdir=terraform
+        working-directory: terraform
+        run: terraform apply -var-file=terraform/test.tfvars -auto-approve
