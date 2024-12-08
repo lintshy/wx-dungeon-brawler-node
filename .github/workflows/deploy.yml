@@ -36,7 +36,7 @@ jobs:
 
     # Deploy Lambda function using AWS CLI
     - name: Deploy Lambda Function
-      run: aws lambda update-function-code --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" --zip-file fileb://lambda_function.zip
+      run: aws lambda update-function-code --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" --zip-file file://lambda.zip
         
            
           
