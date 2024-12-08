@@ -46,7 +46,4 @@ jobs: #Workflow run is made up of one or more jobs
           -var "lambda_zip_path=lambda_function.zip"
           # Step 7: Terraform Apply
       - name: Terraform Apply
-        run: terraform apply -auto-approve \
-          -var "aws_region=${{ secrets.AWS_REGION }}" \
-          -var "lambda_function_name=${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" \
-          -var "lambda_zip_path=lambda_function.zip"
+        run: terraform apply -auto-approve
