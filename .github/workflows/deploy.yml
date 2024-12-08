@@ -20,7 +20,7 @@ jobs: #Workflow run is made up of one or more jobs
           # Created the Secrets Under the Repo only with These Variables
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1 #--> Define Region of the AWS-CLI
+          aws-region: ${{ secrets.AWS_REGION }} #--> Define Region of the AWS-CLI
       - name: npm install
         env:
           CI: true
@@ -29,6 +29,6 @@ jobs: #Workflow run is made up of one or more jobs
       - name: deploy
         run: |
           zip -j deploy.zip ./* #--> Zip the Code As we know lambda function accept the zip file.
-          aws lambda update-function-code --function-name=wx-dungeon-brawler-langllm-test --zip-file=fileb://deploy.zip
+          aws lambda update-function-code --function-name=${{ secrets.AWS_LAMDA_FUNCTION_NAME }} --zip-file=fileb://deploy.zip
 
 # At last the AWS CLI command to Update the Zip file with existing One (With Correct Function Name)
