@@ -18,7 +18,7 @@ resource "aws_lambda_function" "dungeon_brawler" {
 
 # Lambda Execution Role
 resource "aws_iam_role" "lambda_role" {
-  name               = "lambda-execution-role"
+  name               = "dungeon-brawler-node-execution-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
