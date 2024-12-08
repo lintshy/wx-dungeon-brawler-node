@@ -34,6 +34,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Debug Lambda Function Name
+        run: echo "${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}"
+
+      - name: Verify ZIP File
+        run: ls -la lambda.zip
+
       # Deploy Lambda function using AWS CLI
       - name: Deploy Lambda Function
         run: |
