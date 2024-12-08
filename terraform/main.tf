@@ -7,6 +7,7 @@ variable "lambda_function_name" {}
 variable "lambda_zip_path" {}
 variable "environment" {}
 variable "app_name" {}
+variable "tags" {}
 
 # Lambda Function
 resource "aws_lambda_function" "dungeon_brawler" {
