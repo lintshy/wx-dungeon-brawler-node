@@ -1,0 +1,11 @@
+{
+  "name": "wx-dungeon-brawler-node",
+  "version": "1.0.0",
+  "description": "langLLM backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "author": "",
+  "license": "ISC"
+}
