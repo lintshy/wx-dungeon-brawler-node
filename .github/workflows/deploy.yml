@@ -32,9 +32,10 @@ jobs: #Workflow run is made up of one or more jobs
       - name: Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_wrapper: false
+          terraform_version: 1.5.0
       # Step 5: Initialize Terraform
       - name: Terraform Init
+        working-directory: terraform
         run: terraform init
       # Zip code
       - name: Zip
