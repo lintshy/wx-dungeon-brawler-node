@@ -39,7 +39,7 @@ jobs: #Workflow run is made up of one or more jobs
         run: terraform init
       # Zip code
       - name: Zip
-        run: zip -j lambda_function.zip ./*
+        run: zip -j terraform/lambda_function.zip ./*
 
       # Step 6: Terraform Plan
       - name: Terraform Plan
