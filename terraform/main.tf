@@ -18,7 +18,7 @@ resource "aws_lambda_function" "dungeon_brawler" {
 
 # Lambda Execution Role
 resource "aws_iam_role" "lambda_role" {
-  name               = "dungeon-brawler-node-execution-role"
+  name               = "dungeon-brawler-node-execution-role-${var.app_name}-${var.environment}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -33,7 +33,7 @@ resource "aws_iam_role" "lambda_role" {
 
 # Attach Policy to Role
 resource "aws_iam_role_policy" "lambda_policy" {
-  name   = "lambda-policy"
+  name   = "lambda-policy-${var.app_name}-${var.environment}"
   role   = aws_iam_role.lambda_role.id
   policy = jsonencode({
     Version = "2012-10-17"
@@ -53,7 +53,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 
 # API Gateway
 resource "aws_apigatewayv2_api" "dungeon_brawler" {
-  name          = "wx-dungeon-brawler-api-gateway-test"
+  name          = "${var.app_name}-api-gateway-${var.environment}"
   protocol_type = "HTTP"
 }
 

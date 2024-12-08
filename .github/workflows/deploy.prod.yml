@@ -1,9 +1,7 @@
 name: Deploy #Name of the Workflow
 
-on: #Name of the GitHub event that triggers the workflow
-  push: #On Push Event We need to take action
-    branches: #Now we need to specify the branch name
-      - main
+on:
+  workflow_dispatch:
 
 jobs: #Workflow run is made up of one or more jobs
   deploy_lambda:
@@ -39,7 +37,7 @@ jobs: #Workflow run is made up of one or more jobs
       # Step 6: Terraform Plan
       - name: Terraform Plan
         run: zip -j lambda_function.zip ./*
-          terraform plan -var-file=terraform/test.tfvars -chdir=terraform
+          terraform plan -var-file=terraform/prod.tfvars -chdir=terraform
       # Step 7: Terraform Apply
       - name: Terraform Apply
-        run: terraform apply -var-file=terraform/test.tfvars -auto-approve -chdir=terraform
+        run: terraform apply -var-file=terraform/prod.tfvars -auto-approve -chdir=terraform
