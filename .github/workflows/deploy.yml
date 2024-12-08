@@ -14,6 +14,13 @@ jobs: #Workflow run is made up of one or more jobs
       - uses: actions/setup-node@v2 # --> To Setup the Server With Node Env
         with:
           node-version: "14" #--> Specify the Version of the Node
+
+      - name: npm install
+        env:
+          CI: true
+        run: |
+          npm ci
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli
         with:
@@ -21,14 +28,18 @@ jobs: #Workflow run is made up of one or more jobs
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }} #--> Define Region of the AWS-CLI
-      - name: npm install
-        env:
-          CI: true
-        run: |
-          npm ci
-      - name: deploy
-        run: |
-          zip -j deploy.zip ./* #--> Zip the Code As we know lambda function accept the zip file.
-          aws lambda update-function-code --function-name="${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" --zip-file=fileb://deploy.zip
-
-# At last the AWS CLI command to Update the Zip file with existing One (With Correct Function Name)
+      # Step 3: Install Terraform
+      - name: Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+      # Step 5: Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+      # Step 6: Terraform Plan
+      - name: Terraform Plan
+        run: zip -j lambda_function.zip ./*
+          terraform plan \
+          -var "aws_region=${{ secrets.AWS_REGION }}" \
+          -var "lambda_function_name=${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" \
+          -var "lambda_zip_path=lambda_function.zip"
