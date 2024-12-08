@@ -59,28 +59,53 @@ resource "aws_iam_role_policy" "lambda_policy" {
     ]
   })
 }
-
-# API Gateway
-resource "aws_apigatewayv2_api" "dungeon_brawler" {
-  name          = "${var.app_name}-api-gateway-${var.environment}"
-  protocol_type = "HTTP"
-  tags          = var.tags
+# Create API Gateway REST API
+resource "aws_api_gateway_rest_api" "dungeon_brawler" {
+  name        = "${var.app_name}-api"
+  description = "API for ${var.app_name}"
+  tags        = var.tags
 }
 
-resource "aws_apigatewayv2_integration" "dungeon_brawler" {
-  api_id           = aws_apigatewayv2_api.dungeon_brawler.id
-  integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.dungeon_brawler.invoke_arn
+# Create API Gateway Resource (e.g., '/resource')
+resource "aws_api_gateway_resource" "dungeon_brawler_resource" {
+  rest_api_id = aws_api_gateway_rest_api.dungeon_brawler.id
+  parent_id   = aws_api_gateway_rest_api.dungeon_brawler.root_resource_id
+  path_part   = "resource"
 }
 
-resource "aws_apigatewayv2_route" "default" {
-  api_id    = aws_apigatewayv2_api.dungeon_brawler.id
-  route_key = "ANY /"
-  target    = "integrations/${aws_apigatewayv2_integration.dungeon_brawler.id}"
+# Create API Gateway Method (e.g., GET)
+resource "aws_api_gateway_method" "dungeon_brawler_method" {
+  rest_api_id   = aws_api_gateway_rest_api.dungeon_brawler.id
+  resource_id   = aws_api_gateway_resource.dungeon_brawler_resource.id
+  http_method   = "GET"  # You can use other methods like POST, PUT, etc.
+  authorization = "NONE" # or use AWS_IAM, Cognito, etc. for authorization
 }
 
-resource "aws_apigatewayv2_stage" "default" {
-  api_id      = aws_apigatewayv2_api.dungeon_brawler.id
-  name        = "$default"
-  auto_deploy = true
+# Create API Gateway Lambda Integration
+resource "aws_api_gateway_integration" "lambda_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.dungeon_brawler.id
+  resource_id             = aws_api_gateway_resource.dungeon_brawler_resource.id
+  http_method             = aws_api_gateway_method.dungeon_brawler_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"  # Use "AWS_PROXY" for Lambda integration
+  uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.dungeon_brawler.arn}/invocations"
+}
+
+# Grant API Gateway permissions to invoke Lambda function
+resource "aws_lambda_permission" "allow_api_gateway" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.dungeon_brawler.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.dungeon_brawler.execution_arn}/*/*"
+}
+
+# Deploy API Gateway
+resource "aws_api_gateway_deployment" "dungeon_brawler_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.dungeon_brawler.id
+  stage_name  = "prod"
+
+  depends_on = [
+    aws_api_gateway_integration.lambda_integration
+  ]
 }
