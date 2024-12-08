@@ -13,19 +13,15 @@ variable "tags" {
   default     = {}
 }
 
-# Lambda Function
-resource "aws_lambda_function" "dungeon_brawler" {
-  function_name    = var.lambda_function_name
-  runtime          = "nodejs22.x"
-  handler          = "index.handler"
-  role             = aws_iam_role.lambda_role.arn
-  filename         = var.lambda_zip_path
-  source_code_hash = filebase64sha256(var.lambda_zip_path)
-  tags             = var.tags
+
+
+data "aws_iam_role" "existing_role" {
+  name = "${var.app_name}-node-execution-role-${var.environment}"
 }
 
 # Lambda Execution Role
 resource "aws_iam_role" "lambda_role" {
+  count        = length(data.aws_iam_role.existing_role.id) == 0 ? 1 : 0
   name               = "${var.app_name}-node-execution-role-${var.environment}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -40,10 +36,21 @@ resource "aws_iam_role" "lambda_role" {
   tags             = var.tags
 }
 
+# Lambda Function
+resource "aws_lambda_function" "dungeon_brawler" {
+  function_name    = var.lambda_function_name
+  runtime          = "nodejs22.x"
+  handler          = "index.handler"
+  role             = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.arn : aws_iam_role.new_role[0].arn
+  filename         = var.lambda_zip_path
+  source_code_hash = filebase64sha256(var.lambda_zip_path)
+  tags             = var.tags
+}
+
 # Attach Policy to Role
 resource "aws_iam_role_policy" "lambda_policy" {
   name   = "lambda-policy-${var.app_name}-${var.environment}"
-  role   = aws_iam_role.lambda_role.id
+  role   = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.arn : aws_iam_role.new_role[0].arn
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
