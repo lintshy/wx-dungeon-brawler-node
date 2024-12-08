@@ -7,7 +7,11 @@ variable "lambda_function_name" {}
 variable "lambda_zip_path" {}
 variable "environment" {}
 variable "app_name" {}
-variable "tags" {}
+variable "tags" {
+  description = "A map of tags to assign to resources"
+  type        = map(string)
+  default     = {}
+}
 
 # Lambda Function
 resource "aws_lambda_function" "dungeon_brawler" {
@@ -17,6 +21,7 @@ resource "aws_lambda_function" "dungeon_brawler" {
   role             = aws_iam_role.lambda_role.arn
   filename         = var.lambda_zip_path
   source_code_hash = filebase64sha256(var.lambda_zip_path)
+  tags             = var.tags
 }
 
 # Lambda Execution Role
@@ -32,6 +37,7 @@ resource "aws_iam_role" "lambda_role" {
       }
     ]
   })
+  tags             = var.tags
 }
 
 # Attach Policy to Role
@@ -52,12 +58,14 @@ resource "aws_iam_role_policy" "lambda_policy" {
       }
     ]
   })
+  tags             = var.tags
 }
 
 # API Gateway
 resource "aws_apigatewayv2_api" "dungeon_brawler" {
   name          = "${var.app_name}-api-gateway-${var.environment}"
   protocol_type = "HTTP"
+  tags          = var.tags
 }
 
 resource "aws_apigatewayv2_integration" "dungeon_brawler" {

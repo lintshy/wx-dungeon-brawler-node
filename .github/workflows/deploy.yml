@@ -1,4 +1,4 @@
-name: Deploy #Name of the Workflow
+name: Deploy Test #Name of the Workflow
 
 on: #Name of the GitHub event that triggers the workflow
   push: #On Push Event We need to take action
