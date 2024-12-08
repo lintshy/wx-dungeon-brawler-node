@@ -52,25 +52,25 @@ resource "aws_iam_role_policy" "lambda_policy" {
 }
 
 # API Gateway
-resource "aws_apigatewayv2_api" "example" {
-  name          = "example-api"
+resource "aws_apigatewayv2_api" "dungeon_brawler" {
+  name          = "dungeon_brawler-api"
   protocol_type = "HTTP"
 }
 
-resource "aws_apigatewayv2_integration" "example" {
-  api_id           = aws_apigatewayv2_api.example.id
+resource "aws_apigatewayv2_integration" "dungeon_brawler" {
+  api_id           = aws_apigatewayv2_api.dungeon_brawler.id
   integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.example.invoke_arn
+  integration_uri  = aws_lambda_function.dungeon_brawler.invoke_arn
 }
 
 resource "aws_apigatewayv2_route" "default" {
-  api_id    = aws_apigatewayv2_api.example.id
+  api_id    = aws_apigatewayv2_api.dungeon_brawler.id
   route_key = "ANY /"
-  target    = "integrations/${aws_apigatewayv2_integration.example.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.dungeon_brawler.id}"
 }
 
 resource "aws_apigatewayv2_stage" "default" {
-  api_id      = aws_apigatewayv2_api.example.id
+  api_id      = aws_apigatewayv2_api.dungeon_brawler.id
   name        = "$default"
   auto_deploy = true
 }
