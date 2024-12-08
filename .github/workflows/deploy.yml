@@ -36,10 +36,14 @@ jobs: #Workflow run is made up of one or more jobs
       # Step 5: Initialize Terraform
       - name: Terraform Init
         run: terraform init
+      # Zip code
+      - name: Zip
+        run: zip -j lambda_function.zip ./*
+
       # Step 6: Terraform Plan
       - name: Terraform Plan
-        run: zip -j lambda_function.zip ./*
-          terraform plan -var-file=terraform/test.tfvars -chdir=terraform
+        run: terraform plan -var-file=terraform/test.tfvars -chdir=terraform
+
       # Step 7: Terraform Apply
       - name: Terraform Apply
         run: terraform apply -var-file=terraform/test.tfvars -auto-approve -chdir=terraform
