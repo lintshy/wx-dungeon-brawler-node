@@ -17,7 +17,7 @@ variable "tags" {
 
 # Create an S3 bucket for Terraform state
 resource "aws_s3_bucket" "dungeon_brawler" {
-  bucket = var.terraform_state_bucket_name
+  bucket = var.s3_bucket_name
   acl    = "private"
 
   versioning {
@@ -32,13 +32,13 @@ resource "aws_s3_bucket" "dungeon_brawler" {
 }
 
 # Create a DynamoDB table for state locking
-resource "aws_dynamodb_table" "terraform_lock" {
-  name           = var.terraform_lock_table_name
+resource "aws_dynamodb_table" "dungeon_brawler_db_users" {
+  name           = var.dynamodb_users_table_name
   billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "LockID"
+  hash_key       = "userId"
 
   attribute {
-    name = "LockID"
+    name = "userId"
     type = "S"
   }
 
@@ -145,10 +145,10 @@ resource "aws_api_gateway_deployment" "dungeon_brawler_deployment" {
 
 terraform {
   backend "s3" {
-    bucket         = "dungeon_brawler_iac_lock"
-    key            = "terraform/global/state.tfstate"
+    bucket         = "dungeon-brawler-iac-bucket"
+    key            = "terraform/global/dungeon_brawler.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "dungeon_brawler_iac_state"
+    dynamodb_table = "dungeon-brawler-iac-lock"
     encrypt        = true
   }
 }
