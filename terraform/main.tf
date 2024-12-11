@@ -4,6 +4,8 @@ provider "aws" {
 
 variable "aws_region" {}
 variable "lambda_function_name" {}
+variable "terraform_state_bucket_name" {}
+variable "terraform_lock_table_name" {}
 variable "lambda_zip_path" {}
 variable "environment" {}
 variable "app_name" {}
@@ -13,15 +15,39 @@ variable "tags" {
   default     = {}
 }
 
+# Create an S3 bucket for Terraform state
+resource "aws_s3_bucket" "dungeon_brawler" {
+  bucket = var.terraform_state_bucket_name
+  acl    = "private"
 
+  versioning {
+    enabled = true
+  }
 
-data "aws_iam_role" "existing_role" {
-  name = "${var.app_name}-node-execution-role-${var.environment}"
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  tags = var.tags
 }
+
+# Create a DynamoDB table for state locking
+resource "aws_dynamodb_table" "terraform_lock" {
+  name           = var.terraform_lock_table_name
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = var.tags
+}
+
 
 # Lambda Execution Role
 resource "aws_iam_role" "lambda_role" {
-  count              = length(data.aws_iam_role.existing_role.id) == 0 ? 1 : 0
   name               = "${var.app_name}-node-execution-role-${var.environment}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -41,7 +67,7 @@ resource "aws_lambda_function" "dungeon_brawler" {
   function_name    = var.lambda_function_name
   runtime          = "nodejs22.x"
   handler          = "index.handler"
-  role             = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.arn : aws_iam_role.lambda_role[1].arn
+  role             = aws_iam_role.lambda_role.arn
   filename         = var.lambda_zip_path
   source_code_hash = filebase64sha256(var.lambda_zip_path)
   tags             = var.tags
@@ -50,7 +76,7 @@ resource "aws_lambda_function" "dungeon_brawler" {
 # Attach Policy to Role
 resource "aws_iam_role_policy" "lambda_policy" {
   name   = "lambda-policy-${var.app_name}-${var.environment}"
-  role   = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.id : aws_iam_role.lambda_role[1].id
+  role   = aws_iam_role.lambda_role.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -69,7 +95,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 # Create API Gateway REST API
 resource "aws_api_gateway_rest_api" "dungeon_brawler" {
   name        = "${var.app_name}-api"
-  description = "API for ${var.app_name}"
+  description = "API for ${var.app_ name}"
   tags        = var.tags
 }
 
@@ -115,4 +141,14 @@ resource "aws_api_gateway_deployment" "dungeon_brawler_deployment" {
   depends_on = [
     aws_api_gateway_integration.lambda_integration
   ]
+}
+
+terraform {
+  backend "s3" {
+    bucket         = var.terraform_state_bucket_name
+    key            = "terraform/global/state.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = var.terraform_lock_table_name
+    encrypt        = true
+  }
 }
