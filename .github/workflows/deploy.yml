@@ -21,6 +21,9 @@ jobs: #Workflow run is made up of one or more jobs
         run: |
           npm ci
 
+      - name: Set Terraform Log Level
+        run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli
         with:
@@ -44,7 +47,7 @@ jobs: #Workflow run is made up of one or more jobs
       # Step 6: Terraform Plan
       - name: Terraform Plan
         working-directory: terraform
-        run: terraform plan -var-file=test.tfvars -verbose
+        run: terraform plan -var-file=test.tfvars
 
       # Step 7: Terraform Apply
       - name: Terraform Apply
