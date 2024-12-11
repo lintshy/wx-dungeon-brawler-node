@@ -145,10 +145,10 @@ resource "aws_api_gateway_deployment" "dungeon_brawler_deployment" {
 
 terraform {
   backend "s3" {
-    bucket         = var.terraform_state_bucket_name
+    bucket         = "dungeon_brawler_iac_lock"
     key            = "terraform/global/state.tfstate"
     region         = "us-east-1"
-    dynamodb_table = var.terraform_lock_table_name
+    dynamodb_table = "dungeon_brawler_iac_state"
     encrypt        = true
   }
 }
