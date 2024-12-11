@@ -95,7 +95,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 # Create API Gateway REST API
 resource "aws_api_gateway_rest_api" "dungeon_brawler" {
   name        = "${var.app_name}-api"
-  description = "API for ${var.app_ name}"
+  description = "API for ${var.app_name}"
   tags        = var.tags
 }
 
