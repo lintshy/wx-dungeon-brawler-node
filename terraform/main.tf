@@ -4,8 +4,6 @@ provider "aws" {
 
 variable "aws_region" {}
 variable "lambda_function_name" {}
-variable "terraform_state_bucket_name" {}
-variable "terraform_lock_table_name" {}
 variable "lambda_zip_path" {}
 variable "environment" {}
 variable "app_name" {}

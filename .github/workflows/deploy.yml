@@ -44,7 +44,7 @@ jobs: #Workflow run is made up of one or more jobs
       # Step 6: Terraform Plan
       - name: Terraform Plan
         working-directory: terraform
-        run: terraform plan -var-file=test.tfvars
+        run: terraform plan -var-file=test.tfvars -verbose
 
       # Step 7: Terraform Apply
       - name: Terraform Apply
