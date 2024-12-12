@@ -36,7 +36,7 @@ jobs: #Workflow run is made up of one or more jobs
       # Step 5: Initialize Terraform
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init
+        run: terraform init -var-file=test.tfvars
       # Zip code
       - name: Zip
         run: zip -j terraform/lambda_function.zip ./*

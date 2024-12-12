@@ -9,6 +9,7 @@ variable "environment" {}
 variable "app_name" {}
 variable "dynamodb_users_table_name" {}
 variable "s3_bucket_name" {}
+variable "iac_state_key" {}
 variable "tags" {
   description = "A map of tags to assign to resources"
   type        = map(string)
@@ -146,7 +147,7 @@ resource "aws_api_gateway_deployment" "dungeon_brawler_deployment" {
 terraform {
   backend "s3" {
     bucket         = "dungeon-brawler-iac-bucket"
-    key            = "terraform/global/dungeon_brawler.tfstate"
+    key            = var.iac_state_key
     region         = "us-east-1"
     dynamodb_table = "dungeon-brawler-iac-lock"
     encrypt        = true
