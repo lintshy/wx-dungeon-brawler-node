@@ -144,12 +144,4 @@ resource "aws_api_gateway_deployment" "dungeon_brawler_deployment" {
   ]
 }
 
-terraform {
-  backend "s3" {
-    bucket         = "dungeon-brawler-iac-bucket"
-    key            = var.iac_state_key
-    region         = "us-east-1"
-    dynamodb_table = "dungeon-brawler-iac-lock"
-    encrypt        = true
-  }
-}
+
