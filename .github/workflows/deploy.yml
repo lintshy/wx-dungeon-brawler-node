@@ -40,9 +40,7 @@ jobs: #Workflow run is made up of one or more jobs
       # Zip code
       - name: Zip
         run: zip -j terraform/lambda_function.zip ./*
-      # Add debug
-      - name: Set Terraform Log Level
-        run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
+
       # Step 6: Terraform Plan
       - name: Terraform Plan
         working-directory: terraform
